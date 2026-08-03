@@ -12,10 +12,6 @@ jobs:
     permissions:
       contents: write
 
-    defaults:
-      run:
-        working-directory: ./extension
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,19 +24,24 @@ jobs:
           cache-dependency-path: extension/package-lock.json
 
       - name: Install dependencies
+        working-directory: ./extension
         run: npm ci
 
       - name: Build extension
+        working-directory: ./extension
         run: npm run build
 
-      - name: Package extension dist folder to zip
-        run: |
-          cd dist
-          zip -r ../access-astrolabe-extension.zip . -x ".*"
+      # Uses a dedicated zip action to safely compress dist contents directly from root
+      - name: Zip extension dist output
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'access-astrolabe-extension.zip'
+          directory: 'extension/dist'
 
       - name: Upload zip asset to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: extension/access-astrolabe-extension.zip
+          files: extension/dist/access-astrolabe-extension.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
