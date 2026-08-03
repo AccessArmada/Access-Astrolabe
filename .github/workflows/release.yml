@@ -32,7 +32,7 @@ jobs:
       - name: Package extension dist folder to zip
         run: |
           cd dist
-          zip -r ../access-astrolabe-extension.zip *
+          zip -r ../access-astrolabe-extension.zip . -x ".*"
 
       - name: Upload zip asset to GitHub Release
         uses: softprops/action-gh-release@v2
