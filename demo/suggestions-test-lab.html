@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Suggestions - Test Lab</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #333; }
+        section { margin-bottom: 3rem; padding: 1.5rem; border: 1px solid #eee; border-radius: 8px; }
+        h2 { margin-top: 0; color: #000; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        .example { margin: 1.5rem 0; padding: 1rem; background: #f9f9f9; border-left: 4px solid #ddd; }
+        .label { font-weight: bold; display: block; margin-bottom: 0.5rem; color: #666; font-size: 0.9rem; }
+        button, input, select { font-size: 1rem; padding: 0.5rem; }
+        .bad { border-left-color: #e74c3c; }
+        .good { border-left-color: #2ecc71; }
+        code { background: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Accessibility Suggestions Test Lab</h1>
+    <p>Use this page to verify that the Screen Reader Inspector correctly identifies accessibility issues and provides helpful suggestions.</p>
+
+    <!-- 1. Critical: Missing Names -->
+    <section>
+        <h2>1. Critical: Missing Accessible Names</h2>
+
+        <div class="example bad">
+            <span class="label">Empty Button (No text, no aria-label)</span>
+            <button id="empty-btn">
+                <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="5" fill="red"/></svg>
+            </button>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Link with only an icon</span>
+            <a href="#" id="icon-link">
+                <svg width="20" height="20" viewBox="0 0 20 20"><rect x="5" y="5" width="10" height="10" fill="blue"/></svg>
+            </a>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Dialog without accessible name</span>
+            <div role="dialog" tabindex="0" style="padding: 10px; border: 1px solid black;">
+                I am a dialog but I have no label!
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Critical: Hidden Focusables -->
+    <section>
+        <h2>2. Critical: Hidden Focusable Elements</h2>
+
+        <div class="example bad">
+            <span class="label">Focusable element with aria-hidden="true"</span>
+            <button aria-hidden="true" id="hidden-focusable">I am hidden but focusable!</button>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Spinbutton without a label</span>
+            <div role="spinbutton" tabindex="0" aria-valuenow="50" style="padding: 10px; border: 1px solid blue;">
+                50%
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Best Practice: Redundant Roles & Small Targets -->
+    <section>
+        <h2>3. Best Practice: Redundant Roles & Targets</h2>
+
+        <div class="example bad">
+            <span class="label">Redundant Role (button on a button)</span>
+            <button role="button">Redundant Role</button>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Very Small Target (10x10px)</span>
+            <button style="width: 10px; height: 10px; padding: 0;" aria-label="Too small"></button>
+        </div>
+    </section>
+
+    <!-- 4. Content: Generic Link Text -->
+    <section>
+        <h2>4. Content: Generic / Ambiguous Text</h2>
+
+        <div class="example bad">
+            <span class="label">Ambiguous Link Text</span>
+            <p>To learn more about our privacy policy, <a href="#">click here</a>.</p>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Role word in label ("Search Button")</span>
+            <button aria-label="Search Button">Search</button>
+        </div>
+    </section>
+
+    <!-- 5. Complex Relationships -->
+    <section>
+        <h2>5. Relationships & States</h2>
+
+        <div class="example bad">
+            <span class="label">Missing Required State (Checkbox without checked state)</span>
+            <div role="checkbox" tabindex="0">Custom Checkbox</div>
+        </div>
+
+        <div class="example bad">
+            <span class="label">Broken ARIA Relationship (aria-labelledby points to missing ID)</span>
+            <button aria-labelledby="non-existent-id">Broken Label</button>
+        </div>
+    </section>
+
+    <footer style="margin-top: 5rem; font-size: 0.8rem; color: #999;">
+        End of Test Lab
+    </footer>
+</body>
+</html>

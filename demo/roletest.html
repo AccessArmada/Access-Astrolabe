@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Role Resolution Conflict — Demo</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h2 {
+            margin-top: 2.5rem;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 0.25rem;
+        }
+
+        .case {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .expected {
+            font-size: 0.8rem;
+            color: #444;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        code {
+            background: #e8e8e8;
+            padding: 0.1em 0.4em;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Role Resolution Conflict Demo</h1>
+    <p>Tab through each element and check the suggestions panel for the expected warning.</p>
+
+    <!-- ─── Case 1: Unrecognized role token ─────────────────────────────────── -->
+    <h2>Case 1 — Unrecognized role token (typo)</h2>
+    <div class="case">
+        <div class="label">Element</div>
+        <div role="buttn" tabindex="0">Save</div>
+        <p class="expected">Expected: ❌ <em>The role="buttn" attribute contains no recognized ARIA roles...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — all tokens unrecognized</div>
+        <div role="widgit pannel" tabindex="0">Open Panel</div>
+        <p class="expected">Expected: ❌ <em>The role="widgit pannel" attribute contains no recognized ARIA roles...</em>
+        </p>
+    </div>
+
+    <!-- ─── Case 2: Multiple valid tokens ──────────────────────────────────── -->
+    <h2>Case 2 — Multiple role tokens (first valid wins)</h2>
+    <div class="case">
+        <div class="label">Element — two valid roles</div>
+        <div role="button link" tabindex="0">Click me</div>
+        <p class="expected">Expected: 💡 <em>Multiple roles specified: "button link". Only the first valid token
+                ("button") is used...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — invalid token first, valid token second</div>
+        <div role="buttn button" tabindex="0">Save</div>
+        <p class="expected">Expected: 💡 <em>Multiple roles specified, only first valid token used...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Control — single valid token, no warning expected</div>
+        <div role="button" tabindex="0">Click me</div>
+        <p class="expected">Expected: no role resolution warning</p>
+    </div>
+
+    <!-- ─── Case 3: presentation/none ignored — focusable ──────────────────── -->
+    <h2>Case 3 — presentation/none ignored (focusable element)</h2>
+    <div class="case">
+        <div class="label">Element — role="presentation" on a native button</div>
+        <button role="presentation">×</button>
+        <p class="expected">Expected: ❌ <em>role="presentation" was specified but is being ignored because the element
+                is focusable...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — role="none" on a native button</div>
+        <button role="none">Close</button>
+        <p class="expected">Expected: ❌ <em>role="none" ignored because element is focusable...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — role="presentation" on a div with tabindex</div>
+        <div role="presentation" tabindex="0">Focusable div</div>
+        <p class="expected">Expected: ❌ <em>role="presentation" ignored because element is focusable...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — role="presentation" on an anchor</div>
+        <a href="#" role="presentation">Decorative link</a>
+        <p class="expected">Expected: ❌ <em>role="presentation" ignored because element is focusable...</em></p>
+    </div>
+
+    <!-- ─── Case 4: presentation/none ignored — global ARIA attribute ───────── -->
+    <h2>Case 4 — presentation/none ignored (global ARIA attribute present)</h2>
+    <div class="case">
+        <div class="label">Element — role="presentation" with aria-label</div>
+        <div role="presentation" aria-label="Featured article">Some content here</div>
+        <p class="expected">Expected: ❌ <em>role="presentation" ignored because the element has global ARIA
+                attributes...</em></p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — role="none" with aria-describedby</div>
+        <p id="desc-ref">This describes the element below.</p>
+        <div role="none" aria-describedby="desc-ref" tabindex="0">Described div</div>
+        <p class="expected">Expected: ❌ <em>role="none" ignored because the element has global ARIA attributes...</em>
+        </p>
+    </div>
+
+    <!-- ─── Case 5: presentation working correctly (no warning) ─────────────── -->
+    <h2>Case 5 — presentation working correctly (no warning expected)</h2>
+    <div class="case">
+        <div class="label">Element — role="presentation" on non-focusable div, no ARIA attrs</div>
+        <div role="presentation">
+            <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="decorative border graphic">
+        </div>
+        <p class="expected">Expected: no role resolution warning (presentation is valid here)</p>
+    </div>
+
+    <div class="case">
+        <div class="label">Element — layout table with role="presentation"</div>
+        <table role="presentation">
+            <tr>
+                <td tabindex="0">Cell one</td>
+                <td>Cell two</td>
+            </tr>
+        </table>
+        <p class="expected">Expected: no role resolution warning on the table itself</p>
+    </div>
+
+</body>
+
+</html>

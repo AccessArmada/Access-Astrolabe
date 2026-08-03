@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Name Trace - Test Lab</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #333; }
+        section { margin-bottom: 3rem; padding: 1.5rem; border: 1px solid #eee; border-radius: 8px; }
+        h2 { margin-top: 0; color: #000; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        .example { margin: 1.5rem 0; padding: 1rem; background: #f9f9f9; border-left: 4px solid #ddd; }
+        .label { font-weight: bold; display: block; margin-bottom: 0.5rem; color: #666; font-size: 0.9rem; }
+        .expect { font-size: 0.85rem; color: #555; margin-top: 0.5rem; }
+        .expect strong { color: #2563eb; }
+        button, input, select, textarea { font-size: 1rem; padding: 0.5rem; }
+        label { display: block; margin-bottom: 0.25rem; }
+        code { background: #eee; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>Accessible Name Trace - Test Lab</h1>
+    <p>Use this page with the Screen Reader Inspector side panel to verify the accessible name trace. Click any element below, then check the trace in the panel.</p>
+
+    <!-- 1. Associated label elements -->
+    <section>
+        <h2>1. Associated Label Elements</h2>
+
+        <div class="example">
+            <span class="label">Explicit label (for/id)</span>
+            <label for="username">Username Label</label>
+            <input id="username" type="text" />
+            <p class="expect">Inspect the input → expect <strong>Associated label elements: "Username Label"</strong> (success)</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Implicit label (input wrapped in label)</span>
+            <label>
+                Password Label
+                <input id="password" type="password" />
+            </label>
+            <p class="expect">Inspect the input → expect <strong>Associated label elements: "Password Label"</strong> (success)</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Multiple labels (one explicit, one implicit)</span>
+            <label for="email">Email</label>
+            <label>
+                (required)
+                <input id="email" type="email" />
+            </label>
+            <p class="expect">Inspect the input → expect <strong>Associated label elements</strong> containing both "Email" and "(required)"</p>
+        </div>
+
+        <div class="example">
+            <span class="label">aria-label overrides associated labels</span>
+            <label for="search">Search</label>
+            <input id="search" type="search" aria-label="Search the site" />
+            <p class="expect">Inspect the input → expect <strong>aria-label</strong> wins (success), <strong>Associated label elements: Ignored: overridden</strong> (info)</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Input with no label at all</span>
+            <input id="no-label" type="text" placeholder="No label here" />
+            <p class="expect">Inspect the input → expect <strong>Associated label elements: Not present</strong> (info)</p>
+        </div>
+    </section>
+
+    <!-- 2. Descendant name contributions -->
+    <section>
+        <h2>2. Descendant Name Contributions (Text Content)</h2>
+
+        <div class="example">
+            <span class="label">Button with span that has aria-label overriding its text</span>
+            <button id="save-btn">
+                <span aria-label="Save changes">Save</span>
+            </button>
+            <p class="expect">Inspect the button → expect <strong>Text content: "Save changes"</strong> (from the span's aria-label, not the visible "Save")</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Button with plain text (no overrides)</span>
+            <button id="plain-btn">Click Me</button>
+            <p class="expect">Inspect the button → expect <strong>Text content: "Click Me"</strong> (normal text node)</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Button with aria-label overriding all descendants</span>
+            <button id="override-btn" aria-label="Close dialog">
+                <span aria-label="Save changes">Save</span>
+            </button>
+            <p class="expect">Inspect the button → expect <strong>aria-label: "Close dialog"</strong> wins (success), <strong>Text content</strong> ignored (info)</p>
+        </div>
+
+        <div class="example">
+            <span class="label">Link with mixed content (icon aria-label + text)</span>
+            <a id="mixed-link" href="#">
+                <span aria-label="GitHub">
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#333"/></svg>
+                </span>
+                Profile
+            </a>
+            <p class="expect">Inspect the link → expect <strong>Text content</strong> to include "GitHub" and "Profile"</p>
+        </div>
+    </section>
+</body>
+</html>

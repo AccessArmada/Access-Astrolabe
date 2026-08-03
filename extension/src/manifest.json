@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Access Astrolabe",
+  "description": "Understand what screen readers say and why.",
+  "version": "1.0.0",
+  "permissions": [
+    "sidePanel",
+    "scripting",
+    "storage",
+    "contextMenus"
+  ],
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Open Access Astrolabe",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel/index.html"
+  },
+  "background": {
+    "service_worker": "background/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/ariaNotify-interceptor.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/index.js"
+      ],
+      "run_at": "document_idle",
+      "match_about_blank": true
+    }
+  ]
+}

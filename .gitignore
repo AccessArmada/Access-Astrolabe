@@ -1,0 +1,15 @@
+# OS & system files
+.DS_Store
+
+# Node & dependencies
+node_modules/
+
+# Local build / test outputs
+dist/
+coverage/
+test-results/
+
+
+# Local environment & IDE
+.venv/
+.worktrees/
