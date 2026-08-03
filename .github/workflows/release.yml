@@ -1,13 +1,14 @@
 name: Build and Release Extension
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build-release:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -16,32 +17,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/releases/setup-node@v4
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: extension/package-lock.json
 
       - name: Install dependencies
-        run: |
-          cd extension
-          npm ci
+        working-directory: ./extension
+        run: npm ci
 
       - name: Build extension
-        run: |
-          cd extension
-          npm run build
+        working-directory: ./extension
+        run: npm run build
 
-      - name: Package extension ZIP
-        run: |
-          # Zip the built output folder so manifest.json is at the zip root
-          cd extension/dist
-          zip -r ../../extension-${{ github.ref_name }}.zip .
+      # Uses a dedicated zip action to safely compress dist contents directly from root
+      - name: Zip extension dist output
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'access-astrolabe-extension.zip'
+          directory: 'extension/dist'
 
-      - name: Create GitHub Release
+      - name: Upload zip asset to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: extension-${{ github.ref_name }}.zip
-          generate_release_notes: true
+          files: extension/dist/access-astrolabe-extension.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

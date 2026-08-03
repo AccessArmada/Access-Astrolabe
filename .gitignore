@@ -13,3 +13,6 @@ test-results/
 # Local environment & IDE
 .venv/
 .worktrees/
+
+# Extension build archives
+*.zip
