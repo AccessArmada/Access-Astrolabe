@@ -22,9 +22,30 @@
 
         <!-- Testing Coach: Guided audits -->
         <!--
-        <section id="view-coach" class="coach-pane hidden" role="tabpanel" aria-labelledby="btn-show-coach">
+        <section id="view-coach" class="coach-pane" role="tabpanel" aria-labelledby="btn-show-coach">
             <h2 id="coach-heading">Testing Coach (MVP)</h2>
-            ...
+            <div id="coach-initial" class="coach-screen">
+                <p>Audit headings on the current page for quality and descriptiveness.</p>
+                <button id="start-audit" class="btn-primary">Start Heading Audit</button>
+            </div>
+            <div id="coach-active" class="coach-screen hidden">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" role="progressbar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="test-progress-text">Heading 0 of 0</span>
+                </div>
+                <div id="coach-instruction" class="coach-instruction">Press Alt+Shift+H to find the first heading.</div>
+                <div class="button-group">
+                    <button id="coach-pass" class="btn-pass" disabled>✓ Descriptive</button>
+                    <button id="coach-fail" class="btn-fail" disabled>✗ Unclear</button>
+                </div>
+            </div>
+            <div id="coach-summary" class="coach-screen hidden">
+                <h3>Audit Complete</h3>
+                <div id="summary-stats" class="summary-stats"></div>
+                <button id="restart-audit" class="btn-primary">Run Another Audit</button>
+            </div>
         </section>
         -->
 
@@ -173,12 +194,12 @@
                     development.</p>
                 <h3>Resources</h3>
                 <ul>
-                    <li><a href="https://www.accessarmada.com/access-astrolabe/">Website</a></li>
-                    <li><a href="https://www.example.com">Github Repository</a></li>
+                    <li><a href="https://www.accessarmada.com/access-astrolabe/" target="_blank" rel="noopener noreferrer">Website <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a></li>
+                    <li><a href="https://github.com/AccessArmada/Access-Astrolabe" target="_blank" rel="noopener noreferrer">Github Repository <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a></li>
                 </ul>
-                <div class="help-footer">
-                    Access Astrolabe by Access Armada • Free & Open Source
-                </div>
+            </div>
+            <div class="help-footer">
+                Access Astrolabe by Access Armada • Free & Open Source
             </div>
         </section>
     </main>

@@ -626,7 +626,7 @@ export function generateAnnouncement(data, element) {
     const groupContext = getFieldsetContext(element);
     const groupContextToUse = (groupContext && !effectiveName.toLowerCase().includes(groupContext.toLowerCase()))
       ? groupContext : '';
-    const buttonLabel = `${roledesc || 'Button'}${stateStr ? ' ' + stateStr.trim() : ''}`;
+    const buttonLabel = `${roledesc || 'button'}${stateStr ? ' ' + stateStr.trim() : ''}`;
     const parts = [groupContextToUse || null, effectiveName || null, buttonLabel].filter(Boolean);
     announcement = parts.join(', ');
     return finalize(announcement);
@@ -639,7 +639,7 @@ export function generateAnnouncement(data, element) {
     const captionText = figcaption ? normalizeText(figcaption.textContent) : '';
     const parts = [
       effectiveName || null,
-      roledesc || 'Graphic',
+      roledesc || 'graphic',
       (captionText && captionText !== effectiveName) ? captionText : null,
     ].filter(Boolean);
     announcement = parts.join(', ');
@@ -1421,7 +1421,7 @@ export function generateAnnouncement(data, element) {
     'nav','main','header','footer','aside',
     'table','ul','ol','li'
   ]);
-  const roleOrTag = role || (MEANINGFUL_TAGS.has(tagName) ? tagName : '');
+  const roleOrTag = (role || (MEANINGFUL_TAGS.has(tagName) ? tagName : '')).toLowerCase();
   announcement = `${effectiveName || ''} ${roleOrTag}`.trim();
   return finalize(announcement);
 }

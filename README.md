@@ -75,6 +75,16 @@ Because Access Astrolabe is a completely local, client-side browser extension:
 
 ---
 
+## Accessibility & Screen Reader Behavior
+
+Access Astrolabe is designed to support accessible workflows. The extension UI is fully keyboard operable and built to work alongside screen readers.
+
+Because Chrome extension side panels operate in a separate browsing context from the page being inspected, certain interactions and live updates cannot be announced across contexts. When using a screen reader, the recommended workflow is to navigate the page normally, then switch to the side panel to review captured announcements, accessibility properties, and accessible name traces.
+
+For additional details about screen reader interoperability, browser limitations, and implementation decisions, see [Screen Reader Behavior](screen_reader_behavior.md).
+
+---
+
 ## Architecture Overview
 
 Access Astrolabe is a Manifest V3 Chrome extension built with modern web extension tooling:

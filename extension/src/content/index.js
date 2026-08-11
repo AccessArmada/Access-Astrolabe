@@ -398,10 +398,6 @@ function broadcastFocusChange(element) {
 
       updateHighlighter(element);
       queuePeekUpdate(element);
-
-      if (chrome.runtime?.id && chrome.storage?.local) {
-        chrome.storage.local.set({ 'current-focus': data });
-      }
     }
   } finally {
     isInternalUpdate = false;
@@ -599,6 +595,11 @@ try {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!chrome.runtime?.id) return false;
 
+    if (message.type === 'PING') {
+      sendResponse({ pong: true });
+      return false;
+    }
+
     if (message.type === 'UPDATE_MASK_OPACITY') {
       updateMaskOpacity(message.opacity);
       sendResponse({});
@@ -677,6 +678,22 @@ try {
       }
       sendResponse({});
       return false;
+    } else if (message.type === 'GET_CURRENT_FOCUS') {
+      if (lastFocusedElement) {
+        const data = getAccessibilityData(lastFocusedElement);
+        if (data) {
+          const tableContext = getTableCellContext(lastFocusedElement);
+          if (tableContext) {
+            data.tableContext = tableContext;
+          }
+          data.context = generateContext(lastFocusedElement, data);
+          const cleanData = JSON.parse(JSON.stringify(data));
+          sendResponse({ success: true, data: cleanData });
+          return true;
+        }
+      }
+      sendResponse({ success: false });
+      return true;
     }
 
 

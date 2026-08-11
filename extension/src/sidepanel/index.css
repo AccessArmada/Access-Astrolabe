@@ -911,6 +911,9 @@ footer.app-footer {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
     animation: slideIn 0.2s ease-out;
 }
 
@@ -938,6 +941,8 @@ footer.app-footer {
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
+    flex: 1;
+    overflow-y: auto;
 }
 
 .setting-label {

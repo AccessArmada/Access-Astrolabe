@@ -13,7 +13,8 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "inspect-element") {
+  if (info.menuItemId === "inspect-element" && tab?.id) {
+    chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
     chrome.tabs.sendMessage(tab.id, { type: 'INSPECT_ELEMENT' }).catch(() => {});
   }
 });

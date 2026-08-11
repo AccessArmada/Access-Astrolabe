@@ -105,6 +105,95 @@ chrome.storage.local.get([STORAGE_KEY_ZOOM], (result) => {
     }
 });
 
+// Query current focused element on sidepanel load
+function queryCurrentFocus() {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (!tabs[0]) return;
+
+        // Try immediately, then retry a few times with exponential backoff
+        const attempt = (retriesLeft) => {
+            chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_CURRENT_FOCUS' }, (response) => {
+                if (chrome.runtime.lastError) {
+                    if (retriesLeft > 0) {
+                        setTimeout(() => attempt(retriesLeft - 1), 200 * (3 - retriesLeft));
+                    }
+                    return;
+                }
+
+                if (response?.success && response.data) {
+                    updateInspector(response.data);
+                    updateAnnouncement(response.data.announcement || 'No accessible information');
+                } else {
+                    currentAnnouncementEl.textContent = 'No element focused. Press Tab or click an element on the page to inspect.';
+                }
+            });
+        };
+
+        attempt(3);
+    });
+}
+
+// Inject content scripts into the active tab if not already present
+function ensureContentScriptsInjected() {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (!tabs[0]) {
+            console.debug('No active tab found');
+            return;
+        }
+
+        const tabId = tabs[0].id;
+        const url = tabs[0].url;
+
+        console.debug('Attempting script injection on tab', tabId, 'URL:', url);
+
+        // Don't inject on special pages
+        if (!url || url.startsWith('chrome://') || url.startsWith('about:')) {
+            console.debug('Skipping injection - special page');
+            return;
+        }
+
+        // Check if content script is already present by sending a ping
+        chrome.tabs.sendMessage(tabId, { type: 'PING' }, (response) => {
+            if (response?.pong) {
+                console.debug('Content script already present');
+                return; // Already injected
+            }
+
+            console.debug('Content script not found, injecting...');
+
+            // Inject ariaNotify-interceptor first (runs in MAIN world)
+            chrome.scripting.executeScript({
+                target: { tabId },
+                files: ['content/ariaNotify-interceptor.js'],
+                world: 'MAIN',
+                injectImmediately: true
+            }).then(() => {
+                console.debug('Injected ariaNotify-interceptor');
+                // Then inject main content script
+                return chrome.scripting.executeScript({
+                    target: { tabId },
+                    files: ['content/index.js'],
+                    injectImmediately: false
+                });
+            }).then(() => {
+                console.debug('Injected content/index.js - retry queryCurrentFocus');
+                // Retry the focus query now that scripts are injected
+                queryCurrentFocus();
+            }).catch((err) => {
+                console.error('Script injection failed:', err?.message);
+            });
+        });
+    });
+}
+
+// Inject scripts on sidepanel load
+ensureContentScriptsInjected();
+
+// Query on load
+queryCurrentFocus();
+
+// Also listen for focus changes via the message listener (which still works via FOCUS_CHANGE)
+
 // Initialize State
 let history = [];
 
@@ -234,7 +323,7 @@ function updateInspector(data) {
                                     ${t.attribute ? `
                                         <button class="btn-toggle-trace" aria-label="Toggle ${escapeHtml(t.step)} rule" title="Toggle this rule">
                                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M112s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                 <circle cx="12" cy="12" r="3"></circle>
                                                 ${t.ignored ? '<line x1="1" y1="1" x2="23" y2="23" stroke="#FF4444"></line>' : ''}
                                             </svg>
@@ -473,7 +562,7 @@ function startAudit() {
 }
 
 function updateAuditForHeading(headingName) {
-    coachInstruction.innerHTML = `<strong>Current Heading:</strong> "${headingName}"<br><br>Is this heading descriptive of its section?`;
+    coachInstruction.innerHTML = `<strong>Current Heading:</strong> "${escapeHtml(headingName)}"<br><br>Is this heading descriptive of its section?`;
     coachPassBtn.disabled = false;
     coachFailBtn.disabled = false;
 }
@@ -729,28 +818,10 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// Listen for storage changes as a fallback/alternative to messages
+// Listen for storage changes
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'sync' && changes['vision-mask']) {
         if (visionMaskBtn) visionMaskBtn.checked = changes['vision-mask'].newValue;
-    }
-    if (areaName === 'local' && changes['current-focus']) {
-        const data = changes['current-focus'].newValue;
-        if (data) {
-            console.log('Received focus update via storage:', data);
-            updateAnnouncement(data.announcement);
-            updateInspector(data);
-            addToHistory(data.announcement);
-        }
-    }
-});
-
-// Initial load of focus data
-chrome.storage.local.get(['current-focus'], (result) => {
-    if (result['current-focus']) {
-        const data = result['current-focus'];
-        updateAnnouncement(data.announcement);
-        updateInspector(data);
     }
 });
 

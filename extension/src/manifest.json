@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Access Astrolabe",
   "description": "Understand what screen readers say and why.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "permissions": [
     "sidePanel",
     "scripting",

@@ -58,13 +58,13 @@ describe('generateAnnouncement', () => {
       states: { pressed: 'true', expanded: 'false' }
     };
     const result = generateAnnouncement(data, el);
-    expect(result).toBe('Toggle, Button Pressed: true collapsed');
+    expect(result).toBe('Toggle, button Pressed: true collapsed');
   });
 
   it('handles images', () => {
     const el = document.createElement('img');
     const result = generateAnnouncement({ role: 'img', name: 'Logo', tagName: 'IMG' }, el);
-    expect(result).toBe('Logo, Graphic');
+    expect(result).toBe('Logo, graphic');
   });
 
   it('handles form inputs with required/invalid states', () => {
@@ -193,7 +193,7 @@ describe('generateAnnouncement', () => {
     // Name only
     expect(generateAnnouncement({ name: 'Only Name' }, div)).toBe('Only Name');
     // Role only
-    expect(generateAnnouncement({ role: 'Button' }, div)).toBe('Button');
+    expect(generateAnnouncement({ role: 'Button' }, div)).toBe('button');
     // Description only
     expect(generateAnnouncement({ description: 'Info' }, div)).toBe('Info');
     // Nothing
@@ -280,7 +280,7 @@ describe('generateAnnouncement', () => {
     const el = document.createElement('button');
     el.setAttribute('disabled', '');
     const result = generateAnnouncement({ role: 'button', name: 'Submit', tagName: 'BUTTON' }, el);
-    expect(result).toBe('Submit, Button, unavailable');
+    expect(result).toBe('Submit, button, unavailable');
   });
 
   it('ignores aria-label for role=presentation and prefers text content', () => {
@@ -300,7 +300,7 @@ describe('generateAnnouncement', () => {
     `;
     const el = document.getElementById('target');
     const result = generateAnnouncement({ role: 'button', name: '', tagName: 'BUTTON' }, el);
-    expect(result).toBe('Save Changes, Button');
+    expect(result).toBe('Save Changes, button');
   });
 
   it('falls back to recursive text accumulator (including child img alt)', () => {
@@ -312,7 +312,7 @@ describe('generateAnnouncement', () => {
     el.append(img, span);
 
     const result = generateAnnouncement({ role: 'button', name: '', tagName: 'BUTTON' }, el);
-    expect(result).toBe('Settings Menu, Button');
+    expect(result).toBe('Settings Menu, button');
   });
 
   it('handles textarea without role', () => {
@@ -1297,7 +1297,7 @@ describe('figcaption context for images inside figures', () => {
     const el = document.getElementById('img');
     const result = generateAnnouncement({ role: 'img', name: 'Pennybacker Bridge', tagName: 'IMG' }, el);
     expect(result).toContain('Pennybacker Bridge');
-    expect(result).toContain('Graphic');
+    expect(result).toContain('graphic');
     expect(result).toContain('Fig.1 - The Pennybacker Bridge in Austin, Texas');
   });
 
@@ -1310,13 +1310,13 @@ describe('figcaption context for images inside figures', () => {
     `;
     const el = document.getElementById('img');
     const result = generateAnnouncement({ role: 'img', name: 'My Photo', tagName: 'IMG' }, el);
-    expect(result).toBe('My Photo, Graphic');
+    expect(result).toBe('My Photo, graphic');
   });
 
   it('announces image normally when not inside a figure', () => {
     const el = document.createElement('img');
     const result = generateAnnouncement({ role: 'img', name: 'Logo', tagName: 'IMG' }, el);
-    expect(result).toBe('Logo, Graphic');
+    expect(result).toBe('Logo, graphic');
   });
 });
 
@@ -1333,9 +1333,9 @@ describe('fieldset context surfaced for buttons inside fieldset', () => {
     const dec = document.getElementById('dec');
     const add = document.getElementById('add');
     expect(generateAnnouncement({ role: 'button', name: 'Decrease Amount', tagName: 'BUTTON' }, dec))
-      .toBe("Florida's Orangest Oranges, Decrease Amount, Button");
+      .toBe("Florida's Orangest Oranges, Decrease Amount, button");
     expect(generateAnnouncement({ role: 'button', name: 'Add to cart', tagName: 'BUTTON' }, add))
-      .toBe("Florida's Orangest Oranges, Add to cart, Button");
+      .toBe("Florida's Orangest Oranges, Add to cart, button");
   });
 
   it('does not repeat legend if button name already contains it', () => {
@@ -1353,7 +1353,7 @@ describe('fieldset context surfaced for buttons inside fieldset', () => {
   it('does not prepend context for buttons outside a fieldset', () => {
     const el = document.createElement('button');
     expect(generateAnnouncement({ role: 'button', name: 'Submit', tagName: 'BUTTON' }, el))
-      .toBe('Submit, Button');
+      .toBe('Submit, button');
   });
 });
 
@@ -1971,7 +1971,7 @@ describe('application role context for child elements', () => {
     const el = document.getElementById('drag');
     const result = generateAnnouncement({ role: 'img', name: 'logo', tagName: 'IMG' }, el);
     expect(result).toContain('application');
-    expect(result).toContain('Graphic');
+    expect(result).toContain('graphic');
     expect(result).toContain('draggable');
   });
 

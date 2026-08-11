@@ -26,6 +26,7 @@ We do not use any analytics frameworks (such as Google Analytics, Mixpanel, or A
 Any states, preferences, or logs managed by the Extension are kept entirely inside Chrome's secure storage systems:
 * **Settings & Preferences**: Toggles (like compact mode, Peek Mode activation, and Vision Mask status) and opacity percentages are persisted locally using Chrome's native `chrome.storage.sync` API. If you have Chrome Sync enabled, these preferences are synchronized across your own devices by Google, in accordance with your Google Account settings.
 * **Inspect History**: The temporary screen reader announcement history (limited to 50 entries) is stored in the browser's temporary storage (`chrome.storage.local`) and never leaves your local profile. You can clear this log at any time by clicking the "Clear History" button in the Extension UI.
+* **No Focused Element Caching**: Access Astrolabe does not cache or persist the currently focused element or its accessibility data. When you open the side panel, it queries the active tab for the current focused element in real-time. All subsequent focus changes and live region announcements are transmitted as they occur, without being stored locally.
 
 ### 4. Page Content and DOM Inspection
 To analyze and display screen reader output and calculate the **Accessible Name Trace**, the Extension reads the structural DOM attributes of pages you visit.
@@ -42,7 +43,7 @@ When you install Access Astrolabe, Chrome requires authorization for several tec
 | :--- | :--- | :--- |
 | **Read and change all your data on the websites you visit** | `<all_urls>` / Content Scripts | Necessary to inject light-weight scripts to listen for focus events and inspect accessibility tree structures (such as `aria-label`, headings, and roles) so the simulator can output screen reader text. |
 | **Show as a side panel** | `sidePanel` | Allows the Extension to render its main user interface natively on the side of your browser, preventing layout disruption to the page under audit. |
-| **Inject scripts** | `scripting` | Used programmatically to perform accessibility evaluations on the page frame. |
+| **Inject scripts** | `scripting` | Allows the Extension to inject its content script into already-loaded pages so you can inspect them without reloading. Used when you open the side panel on a page that was loaded before the extension was enabled. |
 | **Store settings** | `storage` | Saves your custom visual preferences, zoom scale, and settings toggles so they persist between browser sessions. |
 | **Add context menus** | `contextMenus` | Provides quick right-click shortcuts to open the inspector or trigger structural audits. |
 

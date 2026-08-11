@@ -1,6 +1,6 @@
 {
-  "name": "screen-reader-inspector",
-  "version": "0.1.1",
+  "name": "access-astrolabe",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

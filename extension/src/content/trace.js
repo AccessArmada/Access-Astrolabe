@@ -107,6 +107,7 @@ export function computeTrace(element) {
       step: 'aria-labelledby attribute',
       value,
       type: isValid ? 'success' : 'warning',
+      attribute: 'aria-labelledby',
       details
     });
     if (isValid) nameFound = true;
@@ -114,7 +115,8 @@ export function computeTrace(element) {
     trace.push({
       step: 'aria-labelledby attribute',
       value: 'Not present',
-      type: 'info'
+      type: 'info',
+      attribute: 'aria-labelledby'
     });
   }
 
@@ -124,14 +126,16 @@ export function computeTrace(element) {
     trace.push({
       step: 'aria-label attribute',
       value: `Present: "${element.getAttribute('aria-label')}"${!isWinner && !nameFound ? '' : (!isWinner ? ' (Ignored: overridden)' : '')}`,
-      type: isWinner ? 'success' : 'info'
+      type: isWinner ? 'success' : 'info',
+      attribute: 'aria-label'
     });
     if (isWinner) nameFound = true;
   } else {
     trace.push({
       step: 'aria-label attribute',
       value: 'Not present',
-      type: 'info'
+      type: 'info',
+      attribute: 'aria-label'
     });
   }
 
@@ -149,6 +153,7 @@ export function computeTrace(element) {
         step: 'Associated label elements',
         value: 'Ignored: overridden',
         type: 'info',
+        attribute: 'label',
         ...(ignoredDetails && { details: ignoredDetails })
       });
     } else {
@@ -163,6 +168,7 @@ export function computeTrace(element) {
           step: 'Associated label elements',
           value: `Present: "${labelText}"`,
           type: 'success',
+          attribute: 'label',
           details
         });
         nameFound = true;
@@ -170,7 +176,8 @@ export function computeTrace(element) {
         trace.push({
           step: 'Associated label elements',
           value: 'Not present',
-          type: 'info'
+          type: 'info',
+          attribute: 'label'
         });
       }
     }
@@ -183,18 +190,20 @@ export function computeTrace(element) {
       trace.push({
         step: 'alt attribute',
         value: `Present: "${element.getAttribute('alt')}"${!isWinner ? ' (Ignored: overridden)' : ''}`,
-        type: isWinner ? 'success' : 'info'
+        type: isWinner ? 'success' : 'info',
+        attribute: 'alt'
       });
       if (isWinner) nameFound = true;
     } else {
-      trace.push({ step: 'alt attribute', value: 'Not present', type: 'info' });
+      trace.push({ step: 'alt attribute', value: 'Not present', type: 'info', attribute: 'alt' });
     }
   } else if (tag === 'input' && element.hasAttribute('alt')) {
     const isWinner = !nameFound;
     trace.push({
       step: 'alt attribute',
       value: `Present: "${element.getAttribute('alt')}"${!isWinner ? ' (Ignored: overridden)' : ''}`,
-      type: isWinner ? 'success' : 'info'
+      type: isWinner ? 'success' : 'info',
+      attribute: 'alt'
     });
     if (isWinner) nameFound = true;
   }
@@ -206,7 +215,8 @@ export function computeTrace(element) {
     trace.push({
       step: 'Child image alt attribute',
       value: `Present: "${imgChild.getAttribute('alt')}"${!isWinner ? ' (Ignored: overridden)' : ''}`,
-      type: isWinner ? 'success' : 'info'
+      type: isWinner ? 'success' : 'info',
+      attribute: 'alt'
     });
     if (isWinner) nameFound = true;
   }
@@ -234,14 +244,16 @@ export function computeTrace(element) {
     trace.push({
       step: 'title attribute',
       value: `Present: "${element.getAttribute('title')}"${!isWinner ? ' (Ignored: overridden)' : ' (Used as fallback)'}`,
-      type: isWinner ? 'success' : 'info'
+      type: isWinner ? 'success' : 'info',
+      attribute: 'title'
     });
     if (isWinner) nameFound = true;
   } else {
     trace.push({
       step: 'title attribute',
       value: 'Not present',
-      type: 'info'
+      type: 'info',
+      attribute: 'title'
     });
   }
 
