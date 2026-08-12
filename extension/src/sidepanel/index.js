@@ -154,6 +154,13 @@ function ensureContentScriptsInjected() {
 
         // Check if content script is already present by sending a ping
         chrome.tabs.sendMessage(tabId, { type: 'PING' }, (response) => {
+            if (chrome.runtime.lastError) {
+                // Expected: no content script listening yet on this tab.
+                // Reading lastError here (rather than ignoring it) is what
+                // prevents Chrome from logging an "Unchecked runtime.lastError"
+                // warning for this normal, anticipated case.
+            }
+
             if (response?.pong) {
                 console.debug('Content script already present');
                 return; // Already injected

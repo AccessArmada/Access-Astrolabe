@@ -43,6 +43,13 @@ html {
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
+    /* Pin the document root so it never grows a native scrollbar of its own.
+       Internal scrolling is handled entirely by #app-container / .help-content
+       etc; without this, wheel scrolling that bottoms out in one of those
+       interior scroll areas "chains" into the document itself, which reports
+       a scrollHeight covering the full unclipped content even though nested
+       overflow:hidden containers already clip it visually. */
+    overflow: hidden;
 }
 
 body {
@@ -80,6 +87,7 @@ body {
     font-weight: var(--font-weight-regular);
     line-height: 1.5;
     height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     max-width: var(--panel-max-width);

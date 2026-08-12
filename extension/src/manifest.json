@@ -9,6 +9,9 @@
     "storage",
     "contextMenus"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
 
   "icons": {
     "16": "icons/icon16.png",
