@@ -30,21 +30,30 @@ export const test = base.extend({
   sidePanel: async ({ context, extensionId }, use) => {
     const sidePanelPage = await context.newPage();
     await sidePanelPage.goto(`chrome-extension://${extensionId}/sidepanel/index.html`);
-    // Wait for the side panel JS to fully initialize
     await sidePanelPage.waitForFunction(() => typeof chrome !== 'undefined');
     await use(sidePanelPage);
+    await sidePanelPage.close();
   },
 
   /**
-   * testServer — a local HTTP server that serves parameterized HTML pages.
-   * Content scripts only inject on real navigation events (page.goto), NOT
-   * on page.setContent(). This server enables correct injection.
+   * testServer — local HTTP server setup and clean teardown.
    */
   testServer: async ({ }, use) => {
     const server = await startTestServer();
     await use(server);
-    await server.close();
+
+    // Force-close connections if supported by the Node server instance
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    } else if (server.httpServer?.closeAllConnections) {
+      server.httpServer.closeAllConnections();
+    }
+
+    // Race server close against a 2s safety timeout so teardown NEVER hangs CI
+    await Promise.race([
+      new Promise((resolve) => server.close ? server.close(resolve) : resolve()),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]);
   },
 });
-
 export const expect = test.expect;

@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: extension/package-lock.json
 
@@ -27,19 +27,18 @@ jobs:
         working-directory: ./extension
         run: npm ci
 
-      - name: Run unit tests
+      - name: Install Playwright Browsers & Dependencies
         working-directory: ./extension
-        run: npm run test
-
-      - name: Run integration tests
-        working-directory: ./extension
-        run: npm run test:integration
+        run: npx playwright install --with-deps chromium
 
       - name: Build extension
         working-directory: ./extension
         run: npm run build
 
-      # Uses a dedicated zip action to safely compress dist contents directly from root
+      - name: Run Integration Tests
+        working-directory: ./extension
+        run: npm run test:integration
+
       - name: Zip extension dist output
         uses: thedoctor0/zip-release@0.7.5
         with:

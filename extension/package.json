@@ -7,7 +7,7 @@
     "build": "vite build",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:integration": "npx playwright test"
+    "test:integration": "xvfb-run playwright test"
   },
   "dependencies": {
     "dom-accessibility-api": "^0.7.0"
