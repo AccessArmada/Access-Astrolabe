@@ -6,7 +6,7 @@ Access Astrolabe is a Chrome extension for debugging accessibility behavior dire
 
 Designed for developers, QA engineers, and accessibility specialists, Access Astrolabe helps investigate accessibility issues that are difficult to understand from DOM inspection alone by showing what is announced, why it is announced, and which underlying HTML and ARIA properties contributed to the result.
 
-> **Just want to use Access Astrolabe?** [Install the extension from the Chrome Web Store](Chttps://chromewebstore.google.com/detail/access-astrolabe/ljhamdpaccapmnkfgcfkfcjicmbfjbgn).  
+> **Just want to use Access Astrolabe?** [Install the extension from the Chrome Web Store](https://chromewebstore.google.com/detail/access-astrolabe/ljhamdpaccapmnkfgcfkfcjicmbfjbgn).  
 > **Want to build or modify it?** Continue below for local development and setup instructions.
 
 ---
