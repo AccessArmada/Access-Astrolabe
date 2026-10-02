@@ -21,7 +21,7 @@
     "vitest": "^5.0.0"
   },
   "overrides": {
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "esbuild": "^0.25.0",
     "shell-quote": "^1.8.2",
     "tmp": "^0.2.3",
