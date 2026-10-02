@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accessibility Lab Page</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 40px;
+      line-height: 1.5;
+      color: #111;
+      max-width: 900px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .icon {
+      font-size: 18px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .state {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    input {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    /* Optional: annotation mode visualization */
+    body.show-annotations [data-a11y-source],
+    body.show-annotations [data-a11y-contribution],
+    body.show-annotations [data-a11y-note] {
+      outline: 1px dashed #999;
+      position: relative;
+    }
+
+    body.show-annotations [data-a11y-source]::after,
+    body.show-annotations [data-a11y-contribution]::after,
+    body.show-annotations [data-a11y-note]::after {
+      content: attr(data-a11y-note);
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #111;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Accessibility Lab Page</h1>
+  <p>This page contains intentionally simple UI patterns to test accessibility behavior and naming resolution.</p>
+
+  <!-- 1. Simple Button -->
+  <div class="section">
+    <h2>1. Simple Button (Baseline)</h2>
+
+    <div class="card">
+      <button
+        data-a11y-note="baseline-text-node"
+      >
+        Submit
+      </button>
+
+      <div class="hint">
+        Baseline case: text content becomes accessible name.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Icon Button -->
+  <div class="section">
+    <h2>2. Icon Button with aria-label Override</h2>
+
+    <div class="card">
+      <button
+        aria-label="Close dialog"
+        data-a11y-source="aria-label"
+        data-a11y-note="aria-label-wins-over-text"
+      >
+        <span class="icon" data-a11y-contribution="visual-icon-only">✕</span>
+      </button>
+
+      <div class="hint">
+        Icon-only button. Accessible name comes from aria-label, not visible text.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Nested DOM -->
+  <div class="section">
+    <h2>3. Nested Structure (Div Soup)</h2>
+
+    <div class="card">
+      <button data-a11y-note="dom-text-aggregation">
+        <span>
+          <div>
+            <strong data-a11y-contribution="text-node">
+              Save
+            </strong>
+          </div>
+        </span>
+      </button>
+
+      <div class="hint">
+        Multiple nested elements contribute to the accessible name via text aggregation.
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. aria-labelledby -->
+  <div class="section">
+    <h2>4. aria-labelledby Example</h2>
+
+    <div class="card">
+
+      <h3 id="label-title" data-a11y-contribution="label-source">
+        User Settings
+      </h3>
+
+      <p id="label-desc" data-a11y-contribution="label-source">
+        Opens configuration panel for account preferences.
+      </p>
+
+      <button
+        aria-labelledby="label-title label-desc"
+        data-a11y-source="aria-labelledby"
+        data-a11y-note="composed-from-multiple-nodes"
+      >
+        Open
+      </button>
+
+      <div class="hint">
+        Accessible name is composed from multiple referenced elements.
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Input mismatch -->
+  <div class="section">
+    <h2>5. Input Label vs Placeholder Mismatch</h2>
+
+    <div class="card">
+      <label for="email" data-a11y-contribution="label">
+        Email Address
+      </label><br/>
+
+      <input
+        id="email"
+        placeholder="Enter your username"
+        data-a11y-source="label-vs-placeholder"
+        data-a11y-note="label-used-not-placeholder"
+      />
+
+      <div class="hint">
+        Label and placeholder differ. Useful for debugging naming vs hint behavior.
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Stateful Button -->
+  <div class="section">
+    <h2>6. Stateful Button (aria-expanded)</h2>
+
+    <div class="card">
+      <button
+        id="toggleBtn"
+        aria-expanded="false"
+        data-a11y-source="stateful-attribute"
+        data-a11y-note="dynamic-state-change"
+        onclick="toggleState()"
+      >
+        Show Details
+      </button>
+
+      <div id="details" class="state" hidden>
+        Here are additional details that appear when expanded.
+      </div>
+
+      <div class="hint">
+        Tests dynamic accessibility state changes.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleState() {
+      const btn = document.getElementById("toggleBtn");
+      const details = document.getElementById("details");
+
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+
+      btn.setAttribute("aria-expanded", String(!expanded));
+
+      if (expanded) {
+        details.hidden = true;
+        btn.textContent = "Show Details";
+      } else {
+        details.hidden = false;
+        btn.textContent = "Hide Details";
+      }
+    }
+
+    // Optional: toggle annotation mode for screenshots
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "a") {
+        document.body.classList.toggle("show-annotations");
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+.card {
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.trace-highlight {
+  outline: 2px solid #4f46e5;
+  background: #eef2ff;
+}
+

@@ -6,7 +6,7 @@ import { computeSuggestions } from "./suggestions.js";
 import { VALID_ARIA_ROLES } from "./roles.js";
 import { initNavigator, isExtensionManagedTabindex, cleanupExtensionTabindex } from "./navigator.js";
 import { computeStatesSummary, computeValueSummary } from "./state-summary.js";
-import { toggleMask, togglePeekMask, updatePeekMaskVars, setPeekMaskFullDark, updateMaskOpacity } from "./mask.js";
+import { toggleMask, togglePeekMask, updatePeekMaskVars, setPeekMaskFullDark, updateMaskOpacity, setMaskSuspended } from "./mask.js";
 import { updateHighlighter } from "./highlighter.js";
 
 
@@ -260,6 +260,9 @@ function getAccessibilityData(element) {
 let lastFocusedElement = null;
 let lastRightClickedElement = null;
 let peekEnabled = false;
+// Whether the side panel is currently open. Visual effects (focus highlighter,
+// vision mask) are suspended while it's closed, since no one is viewing them.
+let panelOpen = false;
 
 let peekUpdateQueued = false;
 
@@ -396,7 +399,7 @@ function broadcastFocusChange(element) {
         chrome.runtime.sendMessage({ type: "FOCUS_CHANGE", data: cleanData }).catch(() => {});
       }
 
-      updateHighlighter(element);
+      if (panelOpen) updateHighlighter(element);
       queuePeekUpdate(element);
     }
   } finally {
@@ -552,6 +555,14 @@ try {
     observer.observe(document.body, observerOptions);
   }
 
+  // Find out whether the side panel is already open (e.g. on page reload while it's open)
+  if (chrome.runtime?.id) {
+    chrome.runtime.sendMessage({ type: 'GET_PANEL_STATE' }).then((response) => {
+      panelOpen = Boolean(response?.open);
+      setMaskSuspended(!panelOpen);
+      if (panelOpen && lastFocusedElement) updateHighlighter(lastFocusedElement);
+    }).catch(() => {});
+  }
 
   // Read initial mask setting
   if (chrome.runtime?.id && chrome.storage?.sync) {
@@ -597,6 +608,22 @@ try {
 
     if (message.type === 'PING') {
       sendResponse({ pong: true });
+      return false;
+    }
+
+    if (message.type === 'PANEL_OPENED') {
+      panelOpen = true;
+      setMaskSuspended(false);
+      if (lastFocusedElement) updateHighlighter(lastFocusedElement);
+      sendResponse({});
+      return false;
+    }
+
+    if (message.type === 'PANEL_CLOSED') {
+      panelOpen = false;
+      setMaskSuspended(true);
+      updateHighlighter(null);
+      sendResponse({});
       return false;
     }
 

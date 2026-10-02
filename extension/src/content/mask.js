@@ -8,6 +8,9 @@
 let maskElement = null;
 let isVisionMaskEnabled = false;
 let isPeekEnabled = false;
+// Hides the mask while the side panel is closed, without forgetting the
+// underlying enabled state so it can reappear when the panel reopens.
+let isSuspended = true;
 
 let maskOpacity = 0.7;
 
@@ -21,6 +24,11 @@ export function togglePeekMask(enabled) {
   updateMaskDisplay();
 }
 
+export function setMaskSuspended(suspended) {
+  isSuspended = suspended;
+  updateMaskDisplay();
+}
+
 export function updateMaskOpacity(opacity) {
   maskOpacity = opacity;
   if (maskElement) {
@@ -29,7 +37,7 @@ export function updateMaskOpacity(opacity) {
 }
 
 function updateMaskDisplay() {
-  const needsElement = isVisionMaskEnabled || isPeekEnabled;
+  const needsElement = !isSuspended && (isVisionMaskEnabled || isPeekEnabled);
 
   if (needsElement) {
     if (!maskElement) {

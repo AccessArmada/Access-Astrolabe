@@ -6,6 +6,10 @@
 
 import { escapeHtml, renderTraceDetails } from './render-helpers.js';
 
+// Keeping this port open lets the background script detect, via onDisconnect,
+// when the side panel closes so it can tell content scripts to hide visual effects.
+chrome.runtime.connect({ name: 'sidepanel' });
+
 // Override test CSS margins that apply after page load
 function removeTestCSSMargins() {
     document.documentElement.style.margin = '0';
